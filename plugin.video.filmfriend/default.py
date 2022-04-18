@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from libmediathek4 import lm4
 import resources.lib.jsonparser as jsonParser
-
+import re
 
 
 class filmfriend(lm4):
@@ -27,13 +27,27 @@ class filmfriend(lm4):
 		l = []
 		l.append({'metadata':{'name':self.translation(32030)}, 'type':'dir', 'params':{'mode':'listSearch', 'content':'videos',  'params':'?facets=Kind&facets=VideoKind&facets=Categories&facets=Genres&facets=GameSituations&facets=AgeRecommendation&facets=AudioLanguages&facets=AudioDescriptionLanguages&facets=SubtitleLanguages&facets=ClosedCaptionLanguages&kinds=Video&kinds=Series&videoKinds=Movie&&&&orderBy=ActiveSinceDateTime&sortDirection=Descending&skip=0&take=20'}})
 		l.append({'metadata':{'name':self.translation(32031)}, 'type':'dir', 'params':{'mode':'listSearch', 'content':'videos',  'params':'?facets=Kind&facets=VideoKind&facets=Categories&facets=Genres&facets=GameSituations&facets=AgeRecommendation&facets=AudioLanguages&facets=AudioDescriptionLanguages&facets=SubtitleLanguages&facets=ClosedCaptionLanguages&kinds=Video&videoKinds=Movie&&&&orderBy=MonthlyImpressionScore&sortDirection=Descending&skip=0&take=20'}})
-		l.append({'metadata':{'name':self.translation(30600)}, 'type':'dir', 'params':{'mode':'listSearch', 'content':'tvshows', 'params':'?facets=Kind&facets=VideoKind&facets=Categories&facets=Genres&facets=GameSituations&facets=AgeRecommendation&facets=AudioLanguages&facets=AudioDescriptionLanguages&facets=SubtitleLanguages&facets=ClosedCaptionLanguages&kinds=Series&&languageIsoCode=EN&orderBy=EnglishOrder&sortDirection=Ascending&skip=0&take=500'}})
-		l.append({'metadata':{'name':self.translation(30601)}, 'type':'dir', 'params':{'mode':'listSearch', 'content':'movies',  'params':'?facets=Kind&facets=VideoKind&facets=Categories&facets=Genres&facets=GameSituations&facets=AgeRecommendation&facets=AudioLanguages&facets=AudioDescriptionLanguages&facets=SubtitleLanguages&facets=ClosedCaptionLanguages&kinds=Video&videoKinds=Movie&categories=d36cbed2-7569-4b94-9080-03ce79c2ecee&orderBy=EnglishOrder&sortDirection=Ascending&skip=0&take=500'}})
+		l.append({'metadata':{'name':self.translation(30600)}, 'type':'dir', 'params':{'mode':'listSearch', 'content':'tvshows', 'params':'?facets=Kind&facets=VideoKind&facets=Categories&facets=Genres&facets=GameSituations&facets=AgeRecommendation&facets=AudioLanguages&facets=AudioDescriptionLanguages&facets=SubtitleLanguages&facets=ClosedCaptionLanguages&kinds=Series&&languageIsoCode=EN&orderBy=EnglishOrder&sortDirection=Ascending&skip=0&take=100'}})
+		l.append({'metadata':{'name':self.translation(30601)}, 'type':'dir', 'params':{'mode':'listSearch', 'content':'movies',  'params':'?facets=Kind&facets=VideoKind&facets=Categories&facets=Genres&facets=GameSituations&facets=AgeRecommendation&facets=AudioLanguages&facets=AudioDescriptionLanguages&facets=SubtitleLanguages&facets=ClosedCaptionLanguages&kinds=Video&videoKinds=Movie&categories=d36cbed2-7569-4b94-9080-03ce79c2ecee&orderBy=EnglishOrder&sortDirection=Ascending&skip=0&take=100'}})
+		l.append({'metadata':{'name':'Kinder '+self.translation(30600)}, 'type':'dir', 'params':{'mode':'listSearch', 'content':'tvshows', 'params':'?facets=Kind&facets=VideoKind&facets=Categories&facets=Genres&facets=GameSituations&facets=AgeRecommendation&facets=AudioLanguages&facets=AudioDescriptionLanguages&facets=SubtitleLanguages&facets=ClosedCaptionLanguages&kinds=Series&categoryIds=edb396ba-bb62-409f-9e07-9ccb4eb1dde8&orderBy=EnglishOrder&sortDirection=Ascending&skip=0&take=100'}})
+		l.append({'metadata':{'name':'Kinder '+self.translation(30601)}, 'type':'dir', 'params':{'mode':'listSearch', 'content':'movies',  'params':'?facets=Kind&facets=VideoKind&facets=Categories&facets=Genres&facets=GameSituations&facets=AgeRecommendation&facets=AudioLanguages&facets=AudioDescriptionLanguages&facets=SubtitleLanguages&facets=ClosedCaptionLanguages&kinds=Video&videoKinds=Movie&categoryIds=edb396ba-bb62-409f-9e07-9ccb4eb1dde8&minimumAgeRecommendation=1&maximumAgeRecommendation=11&orderBy=EnglishOrder&sortDirection=Ascending&skip=0&take=100'}})
 		l.append({'metadata':{'name':self.translation(32139)}, 'params':{'mode':'libMediathekSearch', 'searchMode':'listVideoSearch'}, 'type':'dir'})
 		return {'items':l,'name':'root'}
 		
 	def listSearch(self):
-		return jsonParser.parseSearch(self.params['params'],self.params['content'])
+		pagePattern = r'&skip=(\d+)&take=(\d+)'
+		m = re.search(pagePattern, self.params['params'])
+		r = jsonParser.parseSearch(self.params['params'],self.params['content'])
+		if m is not None:
+			oldskip = int(m.group(1))
+			take = int(m.group(2))
+			newskip = oldskip + take
+			pageNum = str(newskip // take)
+			replacement = '&skip=' + str(newskip)
+			nextpage = re.sub(r'&skip=(\d+)', replacement, self.params['params'])
+			if len(r['items']) >= take:
+				r['items'].append({'metadata':{'name':'>>> ' + pageNum}, 'params':{'mode':'listSearch', 'content':self.params['content'], 'params':nextpage}})
+		return r
 		
 	def listVideoSearch(self,searchString):
 		return jsonParser.parseSearch(f'?search={searchString}&facets=Kind&facets=VideoKind&facets=Categories&facets=Genres&facets=GameSituations&facets=AgeRecommendation&facets=AudioLanguages&facets=AudioDescriptionLanguages&facets=SubtitleLanguages&facets=ClosedCaptionLanguages&kinds=Video&kinds=Series&kinds=Person&videoKinds=Movie&languageIsoCode=EN&orderBy=Score&sortDirection=Descending&skip=0&take=30')
