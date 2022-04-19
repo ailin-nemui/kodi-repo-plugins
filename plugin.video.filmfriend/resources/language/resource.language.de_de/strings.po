@@ -1,7 +1,7 @@
 # KODI Media Center language file
 # Addon Name: filmfriend
 # Addon id: script.module.filmfriend
-# Addon version: 1.0.1
+# Addon version: 1.0.2
 # Addon Provider: sarbes
 msgid ""
 msgstr ""
@@ -67,6 +67,90 @@ msgctxt "#30053"
 msgid "Refresh Token"
 msgstr "Refresh Token"
 
+msgctxt "#30060"
+msgid "Age Filter"
+msgstr "Altersbeschränkung"
+
+msgctxt "#30061"
+msgid "None"
+msgstr "Keine"
+
+msgctxt "#30062"
+msgid "0"
+msgstr "0"
+
+msgctxt "#30063"
+msgid "1"
+msgstr "1"
+
+msgctxt "#30064"
+msgid "2"
+msgstr "2"
+
+msgctxt "#30065"
+msgid "3"
+msgstr "3"
+
+msgctxt "#30066"
+msgid "4"
+msgstr "4"
+
+msgctxt "#30067"
+msgid "5"
+msgstr "5"
+
+msgctxt "#30068"
+msgid "6"
+msgstr "6"
+
+msgctxt "#30069"
+msgid "7"
+msgstr "7"
+
+msgctxt "#30070"
+msgid "8"
+msgstr "8"
+
+msgctxt "#30071"
+msgid "9"
+msgstr "9"
+
+msgctxt "#30072"
+msgid "10"
+msgstr "10"
+
+msgctxt "#30073"
+msgid "11"
+msgstr "11"
+
+msgctxt "#30074"
+msgid "12"
+msgstr "12"
+
+msgctxt "#30075"
+msgid "13"
+msgstr "13"
+
+msgctxt "#30076"
+msgid "14"
+msgstr "14"
+
+msgctxt "#30077"
+msgid "15"
+msgstr "15"
+
+msgctxt "#30078"
+msgid "16"
+msgstr "16"
+
+msgctxt "#30079"
+msgid "17"
+msgstr "17"
+
+msgctxt "#30080"
+msgid "18"
+msgstr "18"
+
 msgctxt "#30500"
 msgid "Username"
 msgstr "Nutzername"
@@ -110,3 +194,11 @@ msgstr "Serien"
 msgctxt "#30601"
 msgid "Movies"
 msgstr "Filme"
+
+msgctxt "#30602"
+msgid "Kids"
+msgstr "Kinder"
+
+msgctxt "#30603"
+msgid "Docus"
+msgstr "Dokus"

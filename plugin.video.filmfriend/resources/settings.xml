@@ -52,6 +52,40 @@
 					<control type="spinner" format="string"/>
 				</setting>
 			</group>
+
+			<group id="4" label="">
+				<setting id="agefilter" type="string" label="30060" help="">
+					<level>0</level>
+					<default/>
+					<enable>true</enable>
+					<constraints>
+						<options>
+							<option label="30061">-1</option>
+							<option label="30062">0</option>
+							<option label="30063">1</option>
+							<option label="30064">2</option>
+							<option label="30065">3</option>
+							<option label="30066">4</option>
+							<option label="30067">5</option>
+							<option label="30068">6</option>
+							<option label="30069">7</option>
+							<option label="30070">8</option>
+							<option label="30071">9</option>
+							<option label="30072">10</option>
+							<option label="30073">11</option>
+							<option label="30074">12</option>
+							<option label="30075">13</option>
+							<option label="30076">14</option>
+							<option label="30077">15</option>
+							<option label="30078">16</option>
+							<option label="30079">17</option>
+							<option label="30080">18</option>
+						</options>
+						<allowempty>true</allowempty>
+					</constraints>
+					<control type="spinner" format="string"/>
+				</setting>
+			</group>
 		</category>
 
 

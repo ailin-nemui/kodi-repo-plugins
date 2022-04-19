@@ -2,6 +2,7 @@
 import requests
 import json
 import libmediathek4utils as lm4utils
+import re
 
 base = 'https://api.vod.filmwerte.de/api/v1/'
 
@@ -62,10 +63,26 @@ def parseMain():
 	j = requests.get(f'{base}tenant-groups/21960588-0518-4dd3-89e5-f25ba5bf5631/navigation').json()
 
 def parseSearch(params,content='videos'):
+	pagePattern = r'&skip=(\d+)&take=(\d+)'
+	ageFilter = lm4utils.getSetting('agefilter')
+	if ageFilter == '':
+		ageFilter = -1
+	else:
+		ageFilter = int(ageFilter)
+	m = re.search(pagePattern, params)
 	j = requests.get(f'{base}/tenant-groups/fba2f8b5-6a3a-4da3-b555-21613a88d3ef/search{params}').json()
 	res = {'items':[],'content':content,'pagination':{'currentPage':0}}
+	itemCount = 0
 	for item in j['results']:
+		itemCount += 1
 		result = item['result']
+		if ageFilter >= 0:
+			mpcr = result.get('motionPictureContentRating',None)
+			if mpcr is not None:
+				age = re.search(r'(\d+)', mpcr)
+				if age is not None:
+					if int(age.group(1)) > ageFilter:
+						continue
 		if item['kind'] == 'Series':
 			d = {'type':'tvshow', 'params':{'mode':'listSearch', 'content':'tvshows'}, 'metadata':{'art':{}}}
 			d['metadata']['name'] = _getString(result,'title')
@@ -134,6 +151,15 @@ def parseSearch(params,content='videos'):
 
 			d['params']['video'] = result["id"]
 			res['items'].append(d)
+	if m is not None:
+		oldskip = int(m.group(1))
+		take = int(m.group(2))
+		newskip = oldskip + take
+		pageNum = str(newskip // take)
+		replacement = '&skip=' + str(newskip)
+		nextpage = re.sub(r'&skip=(\d+)', replacement, params)
+		if itemCount >= take:
+			res['items'].append({'metadata':{'name':'>>> ' + pageNum}, 'params':{'mode':'listSearch', 'content':content, 'params':nextpage}})
 	return res
 
 def getVideoUrl(video):
