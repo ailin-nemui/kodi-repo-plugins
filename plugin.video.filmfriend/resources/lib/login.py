@@ -8,6 +8,39 @@ import libmediathek4utils as lm4utils
 base = 'https://api.vod.filmwerte.de/api/v1/'
 
 
+def login():
+	tenant = lm4utils.getSetting('tenant')
+
+	username = lm4utils.getSetting('username')
+	if username == '':
+		return
+
+	password = lm4utils.getSetting('password')
+	if password == '':
+		return
+
+	r = requests.get(f'{base}customers(tenant)/{tenant}/identity-providers?orderBy=&sortDirection=')
+	if r.text == '':
+		lm4utils.displayMsg(lm4utils.getTranslation(30506), lm4utils.getTranslation(30507))
+		return
+
+	j = r.json()
+	provider = j['items'][0]['id']
+	client_id = f'tenant-{tenant}-filmwerte-vod-frontend'
+
+	files = {'client_id':(None, client_id),'provider':(None, provider),'username':(None, username),'password':(None, password)}
+	j = requests.post('http://api.vod.filmwerte.de/connect/authorize-external', files=files).json()
+	if 'error' in j:
+		if j['error'] == 'InvalidCredentials':
+			lm4utils.displayMsg(lm4utils.getTranslation(30506), lm4utils.getTranslation(30508))
+		else:
+			lm4utils.displayMsg(lm4utils.getTranslation(30506), lm4utils.getTranslation(30507))
+		return
+
+	lm4utils.setSetting('access_token', j['access_token'])
+	lm4utils.setSetting('refresh_token', j['refresh_token'])
+	return j['access_token']
+
 def pick():
 	j = requests.get(f'{base}tenant-groups/fba2f8b5-6a3a-4da3-b555-21613a88d3ef/tenants?orderBy=DisplayCategory&sortDirection=Ascending&skip=&take=1000').json()
 	l = []
@@ -51,6 +84,7 @@ def pick():
 	lm4utils.setSetting('tenant', tenant)
 	lm4utils.setSetting('library', library)
 	lm4utils.setSetting('username', username)
+	lm4utils.setSetting('password', password)
 	lm4utils.setSetting('access_token', j['access_token'])
 	lm4utils.setSetting('refresh_token', j['refresh_token'])
 	

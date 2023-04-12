@@ -2,6 +2,8 @@
 import requests
 import json
 import libmediathek4utils as lm4utils
+from . import login
+import xbmc
 import re
 
 base = 'https://api.vod.filmwerte.de/api/v1/'
@@ -193,9 +195,16 @@ def _getNewToken():
 		return False
 	files = {'client_id':(None, f'tenant-{lm4utils.getSetting("tenant")}-filmwerte-vod-frontend'),'grant_type':(None, 'refresh_token'),'refresh_token':(None, refresh_token),'scope':(None, 'filmwerte-vod-api offline_access')}
 	j = requests.post('https://api.vod.filmwerte.de/connect/token', files=files).json()
-	lm4utils.setSetting('access_token', j['access_token'])
-	lm4utils.setSetting('refresh_token', j['refresh_token'])
-	return j['access_token']
+	if 'error' in j:
+		xbmc.log(msg="refresh token error: " + str(j['error']), level=xbmc.LOGDEBUG)
+		token = login.login()
+		if token is None:
+			lm4utils.displayMsg(lm4utils.getTranslation(30506), lm4utils.getTranslation(30507))
+		return token
+	else:
+		lm4utils.setSetting('access_token', j['access_token'])
+		lm4utils.setSetting('refresh_token', j['refresh_token'])
+		return j['access_token']
 
 def _getString(d,k):
 	try:

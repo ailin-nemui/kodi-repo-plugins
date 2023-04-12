@@ -67,6 +67,10 @@ msgctxt "#30053"
 msgid "Refresh Token"
 msgstr "Refresh Token"
 
+msgctxt "#30054"
+msgid "Password"
+msgstr "Passwort"
+
 msgctxt "#30060"
 msgid "Age Filter"
 msgstr "Altersbeschränkung"

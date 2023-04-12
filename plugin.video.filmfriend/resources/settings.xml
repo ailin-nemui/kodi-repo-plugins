@@ -115,6 +115,18 @@
 				</setting>
 			</group>
 			<group id="3" label="">
+				<setting type="string" label="30054" id="password">
+					<level>3</level>
+					<default/>
+					<enable>false</enable>
+					<control type="edit" format="string">
+						<heading>30054</heading>
+						<hidden>true</hidden>
+					</control>
+					<constraints>
+						<allowempty>true</allowempty>
+					</constraints>
+				</setting>
 				<setting type="string" label="30052" id="access_token">
 					<level>3</level>
 					<default/>
